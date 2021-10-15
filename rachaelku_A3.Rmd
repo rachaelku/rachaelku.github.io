@@ -1,0 +1,153 @@
+---
+title: "rachaelku_A3"
+author: "Rachael Ku"
+date: "10/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+```
+
+```{r}
+library(censusapi)
+library(tidyverse)
+library(tigris)
+library(sf)
+library(leaflet)
+
+Sys.setenv(CENSUS_KEY="4e13a5273cf526d80ab8ce9b078d92794e60da99")
+```
+
+
+```{r}
+
+# temp <- tempfile()
+# download.file("https://www2.census.gov/programs-surveys/acs/data/pums/2019/1-Year/csv_hca.zip",destfile = temp)
+# 
+# pums_hca_2019_1yr <- read_csv(unzip(temp,"psam_h06.csv"))
+# 
+# unlink(temp)
+
+```
+
+#Identifying low-income renters without cars as a possible group exposed to heat-related vulnerabilities:
+
+```{r}
+pums_2019_1yr <- getCensus(
+  name = "acs/acs1/pums",
+  vintage = 2019,
+  region = "public use microdata area:*", 
+  regionin = "state:06",
+  vars = c(
+    "SERIALNO",
+    "SPORDER",
+    "PWGTP",
+    "WGTP",
+    "NP",
+    "VEH",
+    "HINCP",
+    "TEN"
+  )
+)
+
+saveRDS(pums_2019_1yr,"PUMS2019.rds")
+pums_2019_1yr <- readRDS("PUMS2019.rds")
+```
+
+
+```{r}
+ca_pumas <-
+  pumas("CA", cb = T, progress_bar = F)
+
+bay_county_names <-
+  c(
+    "Alameda",
+    "Contra Costa",
+    "Marin",
+    "Napa",
+    "San Francisco",
+    "San Mateo",
+    "Santa Clara",
+    "Solano",
+    "Sonoma"
+  )
+
+bay_counties <-
+  counties("CA", cb = T, progress_bar = F) %>%
+  filter(NAME %in% bay_county_names)
+
+bay_pumas <-
+  ca_pumas %>% 
+  st_centroid() %>% 
+  .[bay_counties, ] %>% 
+  st_drop_geometry() %>% 
+  left_join(ca_pumas %>% select(GEOID10)) %>% 
+  st_as_sf()
+
+bay_pums <-
+  pums_2019_1yr %>% 
+  mutate(
+    PUMA = str_pad(public_use_microdata_area,5,"left","0")
+  ) %>% 
+  filter(PUMA %in% bay_pumas$PUMACE10)
+```
+
+```{r}
+bay_pums_ex <-
+  bay_pums %>% 
+  filter(!duplicated(SERIALNO)) %>% 
+  mutate(
+    WGTP = as.numeric(WGTP),
+    novehicle_renter_lowinc = ifelse(
+      (VEH != 0) &
+        (TEN == 3) &
+        (HINCP < 100000),
+      WGTP,
+      0
+    )
+  ) %>% 
+  group_by(PUMA) %>% 
+  summarize(
+    perc_novehicle_renter_lowinc =
+      sum(novehicle_renter_lowinc, na.rm =T)/sum(WGTP, na.rm = T)*100
+  ) %>% 
+  left_join(
+    bay_pumas %>% 
+      select(PUMACE10),
+    by = c("PUMA" = "PUMACE10")
+  ) %>% 
+  st_as_sf()
+```
+
+```{r}
+pums_pal <- colorNumeric(
+  palette = "Oranges",
+  domain = bay_pums_ex$perc_novehicle_renter_lowinc
+)
+
+leaflet() %>%
+  addTiles() %>% 
+  addPolygons(
+    data = bay_pums_ex,
+    fillColor = ~pums_pal(perc_novehicle_renter_lowinc),
+    color = "white",
+    opacity = 0.5,
+    fillOpacity = 0.5,
+    weight = 1,
+    label = ~paste0(
+      round(perc_novehicle_renter_lowinc), 
+      "% Renter households without vehicles making less than $100K"
+    ),
+    highlightOptions = highlightOptions(
+      weight = 2,
+      opacity = 1
+    )
+  ) %>% 
+  addLegend(
+    data = bay_pums_ex,
+    pal = pums_pal,
+    values = ~perc_novehicle_renter_lowinc,
+    title = "% no vehicle<br>renter households<br>making less than $100K"
+  )
+```
