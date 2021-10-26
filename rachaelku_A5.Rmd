@@ -1,0 +1,75 @@
+---
+title: "rachaelku_A5"
+author: "Rachael Ku"
+date: "10/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+```
+
+```{r}
+library(tidyverse)
+library(censusapi)
+library(sf)
+library(tigris)
+library(mapview)
+library(readxl)
+```
+
+```{r}
+temp <- tempfile()
+
+download.file("https://oehha.ca.gov/media/downloads/calenviroscreen/document/calenviroscreen40resultsdatadictionaryf2021.zip",destfile = temp)
+unlink(temp)
+
+ces4 <- read_excel("calenviroscreen40resultsdatadictionary_F_2021.xlsx")
+```
+
+
+```{r}
+colnames(ces4)
+
+ces4_clean <- ces4 %>% 
+  dplyr::select(!ends_with("Pctl"))
+
+sum(is.na(ces4_clean$PM2.5))
+
+ca_tracts <- tracts("CA")
+
+ces4_map <- ces4_clean %>% 
+  left_join(
+    ca_tracts %>% 
+      transmute(GEOID = GEOID %>% as.numeric()),
+    by = c("Census Tract" = "GEOID")
+  ) %>% 
+  st_as_sf()
+
+mapview(ces4_map, zcol = "Asthma")
+mapview(ces4_map, zcol = "PM2.5")
+```
+
+```{r}
+ggplot(
+  data = ces4_clean,
+  aes(
+      x = PM2.5,
+      y = Asthma
+    )
+) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+model <- lm(Asthma ~ PM2.5, ces4_clean)
+
+summary(model)
+```
+
+# An increase of 1 unit in Asthma is associated with an increase of 1.73 units in PM2.5.
+# 1.4% of the variation in Asthma is explained by the variation in PM2.5.
+
+
