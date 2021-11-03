@@ -173,40 +173,40 @@ pre code {
 
 <pre><code>## 
 ## Call:
-## glm(formula = leadrisk ~ BLD + TEN + MV + PUMA, family = quasibinomial(), 
-##     data = sf_pums_model)
+## glm(formula = leadrisk ~ unit_type + tenure + when_moved + area_code, 
+##     family = quasibinomial(), data = sf_pums_model)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
 ## -1.1921  -0.4694  -0.3181  -0.2012   3.2113  
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -13.92107  440.32686  -0.032 0.974781    
-## BLD10         0.16148  761.29317   0.000 0.999831    
-## BLD2         12.79689  440.32681   0.029 0.976817    
-## BLD3         12.69976  440.32681   0.029 0.976993    
-## BLD4         12.73296  440.32682   0.029 0.976932    
-## BLD5         12.52513  440.32682   0.028 0.977309    
-## BLD6         12.17186  440.32683   0.028 0.977949    
-## BLD7         11.78355  440.32686   0.027 0.978652    
-## BLD8         11.70458  440.32686   0.027 0.978795    
-## BLD9         11.67623  440.32683   0.027 0.978846    
-## TEN2         -0.80108    0.22322  -3.589 0.000337 ***
-## TEN3         -0.93710    0.15340  -6.109 1.12e-09 ***
-## TEN4         -1.29169    0.62536  -2.066 0.038950 *  
-## MV2           0.02175    0.27017   0.081 0.935841    
-## MV3           0.64082    0.21219   3.020 0.002546 ** 
-## MV4           0.49233    0.21361   2.305 0.021237 *  
-## MV5          -0.61443    0.23777  -2.584 0.009802 ** 
-## MV6          -1.88973    0.37478  -5.042 4.84e-07 ***
-## MV7          -1.86677    0.34815  -5.362 8.78e-08 ***
-## PUMA07502    -0.17423    0.23764  -0.733 0.463493    
-## PUMA07503     0.08714    0.22911   0.380 0.703730    
-## PUMA07504    -0.10716    0.20931  -0.512 0.608722    
-## PUMA07505    -0.09751    0.23206  -0.420 0.674379    
-## PUMA07506    -0.11058    0.24144  -0.458 0.646977    
-## PUMA07507     0.51786    0.22438   2.308 0.021059 *  
+##                                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                         -4.04365    0.70971  -5.698 1.32e-08 ***
+## unit_type2 Apartments                0.94941    0.32658   2.907 0.003672 ** 
+## unit_type20-49 Apartments           -0.07897    0.38362  -0.206 0.836916    
+## unit_type3-4 Apartments              0.74158    0.32395   2.289 0.022128 *  
+## unit_type5-9 Apartments              0.38831    0.34565   1.123 0.261337    
+## unit_type50 or more Apartments      -0.10732    0.34514  -0.311 0.755860    
+## unit_typeBoat, RV, van, etc.       -11.62207  621.03115  -0.019 0.985070    
+## unit_typeMobile home               -11.78355  440.32686  -0.027 0.978652    
+## unit_typeOne-family house attached   0.91621    0.32558   2.814 0.004919 ** 
+## unit_typeOne-family house detached   1.01335    0.31904   3.176 0.001505 ** 
+## tenureOwned free and clear           0.49062    0.65134   0.753 0.451357    
+## tenureOwned w mortgage or loan       1.29169    0.62536   2.066 0.038950 *  
+## tenureRented                         0.35459    0.62636   0.566 0.571353    
+## when_moved12 months or less          0.61443    0.23777   2.584 0.009802 ** 
+## when_moved12 to 23 months            0.63618    0.25784   2.467 0.013660 *  
+## when_moved2-4 years                  1.25525    0.19541   6.424 1.51e-10 ***
+## when_moved20-29 years               -1.27530    0.35650  -3.577 0.000352 ***
+## when_moved30+ years                 -1.25234    0.32530  -3.850 0.000120 ***
+## when_moved5-9 years                  1.10676    0.19195   5.766 8.84e-09 ***
+## area_code07502                      -0.17423    0.23764  -0.733 0.463493    
+## area_code07503                       0.08714    0.22911   0.380 0.703730    
+## area_code07504                      -0.10716    0.20931  -0.512 0.608722    
+## area_code07505                      -0.09751    0.23206  -0.420 0.674379    
+## area_code07506                      -0.11058    0.24144  -0.458 0.646977    
+## area_code07507                       0.51786    0.22438   2.308 0.021059 *  
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -217,16 +217,32 @@ pre code {
 ## AIC: NA
 ## 
 ## Number of Fisher Scoring iterations: 13</code></pre>
-<pre><code>##  (Intercept)        BLD10         BLD2         BLD3         BLD4         BLD5 
-## 8.998198e-07 5.402830e-01 9.999972e-01 9.999969e-01 9.999970e-01 9.999964e-01 
-##         BLD6         BLD7         BLD8         BLD9         TEN2         TEN3 
-## 9.999948e-01 9.999924e-01 9.999917e-01 9.999915e-01 3.097951e-01 2.814856e-01 
-##         TEN4          MV2          MV3          MV4          MV5          MV6 
-## 2.155661e-01 5.054373e-01 6.549391e-01 6.206547e-01 3.510485e-01 1.312749e-01 
-##          MV7    PUMA07502    PUMA07503    PUMA07504    PUMA07505    PUMA07506 
-## 1.339156e-01 4.565515e-01 5.217701e-01 4.732361e-01 4.756426e-01 4.723824e-01 
-##    PUMA07507 
-## 6.266469e-01</code></pre>
+<pre><code>##                        (Intercept)              unit_type2 Apartments 
+##                       1.723123e-02                       7.209961e-01 
+##          unit_type20-49 Apartments            unit_type3-4 Apartments 
+##                       4.802677e-01                       6.773418e-01 
+##            unit_type5-9 Apartments     unit_type50 or more Apartments 
+##                       5.958751e-01                       4.731958e-01 
+##       unit_typeBoat, RV, van, etc.               unit_typeMobile home 
+##                       8.965958e-06                       7.628982e-06 
+## unit_typeOne-family house attached unit_typeOne-family house detached 
+##                       7.142690e-01                       7.336744e-01 
+##         tenureOwned free and clear     tenureOwned w mortgage or loan 
+##                       6.202519e-01                       7.844339e-01 
+##                       tenureRented        when_moved12 months or less 
+##                       5.877303e-01                       6.489515e-01 
+##          when_moved12 to 23 months                when_moved2-4 years 
+##                       6.538902e-01                       7.782082e-01 
+##              when_moved20-29 years                when_moved30+ years 
+##                       2.183514e-01                       2.222955e-01 
+##                when_moved5-9 years                     area_code07502 
+##                       7.515249e-01                       4.565515e-01 
+##                     area_code07503                     area_code07504 
+##                       5.217701e-01                       4.732361e-01 
+##                     area_code07505                     area_code07506 
+##                       4.756426e-01                       4.723824e-01 
+##                     area_code07507 
+##                       6.266469e-01</code></pre>
 <pre><code>##            1            2            3            4            5            6 
 ## 8.562806e-02 3.232216e-01 4.403036e-02 3.345562e-01 6.890551e-02 1.244332e-02 
 ##            7            8            9           10           11           12 
